@@ -1,0 +1,549 @@
+/* Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ */
+
+#include "qcom-ipq4019-ap.dk04.1.dtsi"
+#include "qcom-ipq4019-audio.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. IPQ4019/AP-DK04.1-C4";
+
+	chosen {
+		bootargs-append = " clk_ignore_unused";
+	};
+
+	soc {
+		pinctrl@0x01000000 {
+			pinctrl-0 = <&helios_pins>;
+			pinctrl-names = "default";
+
+			helios_pins: helios_pinmux {
+				//1 = UART0 as debug console ; 0 = UART0 as Zwave UART
+				UART0_CTRL {
+					pins = "gpio15";
+					function = "gpio";
+					output-high;
+				};
+
+				//Active low to reset the BT
+				BT_RST {
+					pins = "gpio66";
+					function = "gpio";
+					output-high;
+				};
+
+				//1 = BT power on ; 0 = BT power off
+				BT_VREG_EN {
+					pins = "gpio68";
+					function = "gpio";
+					output-high;
+				};
+
+				//1 = Reset button not be pressed ; 0 = Reset button be pressed
+				SW_REST {
+					pins = "gpio2";
+					function = "gpio";
+					input;
+				};
+
+				USB_FLT {
+					pins = "gpio4";
+					function = "gpio";
+					input;
+				};
+
+				USB_EN {
+					pins = "gpio36";
+					function = "gpio";
+					output-low;
+				};
+
+				//Audio PCM interface for BT
+				PCM {
+					pins = "gpio48", "gpio49", "gpio50", "gpio51";
+					function = "aud_pin";
+				};
+
+				//Active low to reset the ZWAVE (at least 20ns)
+				ZW_RST {
+					pins = "gpio59";
+					function = "gpio";
+					output-high;
+				};
+
+				LTE_PWR {
+					pins = "gpio20";
+					function = "gpio";
+					input;
+				};
+
+				LTE_RESET {
+					pins = "gpio35";
+					function = "gpio";
+					input;
+				};
+			};
+
+			i2c_1_pins: i2c_1_pinmux {
+				mux {
+					pins = "gpio12", "gpio13";
+					function = "blsp_i2c1";
+					bias-disable;
+				};
+			};
+
+			audio_gpio_pins: audio_gpio_pinmux {
+				mux_1 {
+					pins = "gpio53";
+					function = "gpio";
+					output-high;
+				};
+				mux_2 {
+					pins = "gpio57";
+					function = "gpio";
+					output-high;
+				};
+				mux_3 {
+					pins = "gpio54";
+					function = "gpio";
+					output-high;
+				};
+			};
+			audio_pins: audio_pinmux {
+				mux_1 {
+					pins = "gpio53";
+					function = "i2s_tx_bclk";
+				};
+				mux_2 {
+					pins = "gpio57";
+					function = "i2s_tx_fsync";
+				};
+				mux_3 {
+					pins = "gpio54";
+					function = "i2s_td1";
+				};
+			};
+
+			audio1_gpio_pins: audio1_gpio_pinmux {
+				mux_1 {
+					pins = "gpio60";
+					function = "gpio";
+					output-high;
+				};
+				mux_2 {
+					pins = "gpio61";
+					function = "gpio";
+					output-high;
+				};
+				mux_3 {
+					pins = "gpio63";
+					function = "gpio";
+					output-high;
+				};
+			};
+
+			audio1_pins: audio1_pinmux {
+				mux_1 {
+					pins = "gpio60";
+					function = "i2s_rx_bclk";
+				};
+				mux_2 {
+					pins = "gpio61";
+					function = "i2s_rx_fsync";
+				};
+				mux_3 {
+					pins = "gpio63";
+					function = "i2s_rxd";
+				};
+			};
+
+			alc1304_pins: alc1304_pinmux {
+				mux_1 {
+					pins = "gpio44";
+					function = "gpio";
+					bias-disable;
+				};
+				mux_2 {
+					pins = "gpio45";
+					function = "gpio";
+					bias-disable;
+				};
+			};
+
+			cx2902x_reset: cx2902x_pinmux {
+				mux_1 {
+					pins = "gpio64";
+					function = "gpio";
+					bias-disable;
+				};
+				mux_2 {
+					pins = "gpio65";
+					function = "gpio";
+					bias-disable;
+				};
+			};
+
+			gpiokey_pins: gpiokey_pinmux {
+				mux {
+					pins = "gpio39", "gpio40", "gpio42", "gpio47";
+					function = "gpio";
+					bias-disable;
+				};
+			};
+
+			wifi_0_pins: wifi1_pinmux {
+				mux_1 {
+					pins = "gpio37";
+					function="wcss0_dbg16";
+					bias-pull-down;
+					drive-cap = <DRV_CAP_QUARTER>;
+				};
+				mux_2 {
+					pins = "gpio43";
+					function="wifi_wci1";
+					bias-pull-down;
+					drive-cap = <DRV_CAP_QUARTER>;
+				};
+				mux_3 {
+					pins = "gpio52";
+					output-high;
+					function="gpio";
+					bias-pull-up;
+					drive-cap = <DRV_CAP_QUARTER>;
+				};
+			};
+		};
+
+		wifi0: wifi@a000000 {
+			pinctrl-0 = <&wifi_0_pins>;
+			pinctrl-names = "default";
+			btcoex_support = <1>;
+			wlan_prio_gpio = <52>;
+		};
+
+		mdio@90000 {
+			status = "ok";
+			pinctrl-0 = <&mdio_pins>;
+			pinctrl-names = "default";
+			phy-reset-gpio = <&tlmm 41 0>;
+			bias-disable;
+		};
+
+		spi_0: spi@78b5000 { /* BLSP1 QUP1 */
+			status = "disabled";
+		};
+
+		i2c_0: i2c@78b7000 { /* BLSP1 QUP2 */
+			status = "disabled";
+		};
+
+		i2c_1: i2c@78b8000 { /* BLSP1 QUP2 */
+			pinctrl-0 = <&i2c_1_pins>;
+			pinctrl-names = "default";
+			status = "ok";
+
+			lp55231_1: lp55231@32 {
+				compatible = "ti,lp55231";
+				reg = <0x32>;
+				clock-mode = /bits/ 8 <0>; /* LP55XX_CLOCK_AUTO */
+				enable-gpio = <&tlmm 1 GPIO_ACTIVE_HIGH>;
+
+				chan0 {
+					chan-name = "led1_g";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan1 {
+					chan-name = "led1_b";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan2 {
+					chan-name = "led2_g";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan3 {
+					chan-name = "led2_b";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan4 {
+					chan-name = "led3_g";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan5 {
+					chan-name = "led3_b";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan6 {
+					chan-name = "led1_r";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan7 {
+					chan-name = "led2_r";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan8 {
+					chan-name = "led3_r";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+			};
+
+			lp55231_2: lp55231@33 {
+				compatible = "ti,lp55231";
+				reg = <0x33>;
+				clock-mode = /bits/ 8 <0>; /* LP55XX_CLOCK_AUTO */
+
+				chan0 {
+					chan-name = "led4_g";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan1 {
+					chan-name = "led4_b";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan2 {
+					chan-name = "led5_g";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan3 {
+					chan-name = "led5_b";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan4 {
+					chan-name = "led6_g";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan5 {
+					chan-name = "led6_b";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan6 {
+					chan-name = "led4_r";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan7 {
+					chan-name = "led5_r";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+
+				chan8 {
+					chan-name = "led6_r";
+					led-cur = /bits/ 8 <50>;
+					max-cur = /bits/ 8 <100>;
+				};
+			};
+
+			rt5628: rt5628@18 {
+				compatible = "rt5628";
+				reg = <0x18>;
+				status = "ok";
+				pinctrl-0 = <&alc1304_pins>;
+				pinctrl-names = "default";
+				shutdown-gpio = <&tlmm 44 GPIO_ACTIVE_LOW>;
+				mute-gpio = <&tlmm 45 GPIO_ACTIVE_HIGH>;
+			};
+
+			conexant@41 {
+				compatible = "conexant,cx2092x";
+				reg = <0x41>;
+				conexant,name = "cx2092x";
+				reset-gpio = <&tlmm 65 GPIO_ACTIVE_HIGH>;
+				pinctrl-0 = <&cx2902x_reset>;
+				pinctrl-names = "default";
+			};
+
+			mcu@15 {
+				compatible = "wistron,mcu";
+				reg = <0x15>;
+			};
+		};
+
+		gpio_input_keys {
+			compatible = "gpio-input-keys";
+			pinctrl-0 = <&gpiokey_pins>;
+			pinctrl-names = "default";
+			autorepeat;
+			volup {
+				label = "Volume Up";
+				linux,code = <KEY_VOLUMEUP>;
+				gpios = <&tlmm 39 GPIO_ACTIVE_HIGH>;
+				linux,input-type = <1>;
+			};
+			voldown {
+				label = "Volume Down";
+				linux,code = <KEY_VOLUMEDOWN>;
+				gpios = <&tlmm 40 GPIO_ACTIVE_HIGH>;
+				linux,input-type = <1>;
+			};
+			alexatrigger {
+				label = "Alexa Trigger";
+				linux,code = <BTN_TRIGGER_HAPPY>;
+				gpios = <&tlmm 42 GPIO_ACTIVE_HIGH>;
+				linux,input-type = <1>;
+			};
+			mute {
+				label = "Mute";
+				linux,code = <SW_MUTE_DEVICE>;
+				gpios = <&tlmm 47 GPIO_ACTIVE_LOW>;
+				linux,input-type = <5>;
+			};
+		};
+
+		gpio_keys {
+			button@2 {
+				label = "restart";
+				linux,code = <KEY_RESTART>;
+				gpios = <&tlmm 2 GPIO_ACTIVE_LOW>;
+				linux,input-type = <1>;
+			};
+		};
+
+		audio: audio@7700000 {
+			compatible = "qca,ipq4019-audio-adss";
+			reg = <0x7700000 0x34>,
+				<0x7707000 0x20>;
+			resets = <&gcc AUDIO_BLK_ARES>;
+			reset-names = "blk_rst";
+			status = "ok";
+		};
+
+		mbox0: mbox@7708000 {
+			dma-index = <0>;
+			compatible = "qca,ipq4019-mbox";
+			reg = <0x7708000 0x1000>;
+			interrupts = <0 156 0>;
+			tx-channel = <MBOX0_TX_ID>;
+			rx-channel = <MBOX0_RX_ID>;
+			status = "ok";
+		};
+
+		mbox3: mbox@770e000 {
+			dma-index = <3>;
+			compatible = "qca,ipq4019-mbox";
+			reg = <0x770E000 0x1000>;
+			interrupts = <0 159 0>;
+			tx-channel = <MBOX3_TX_ID>;
+			rx-channel = <MBOX3_RX_ID>;
+			status = "ok";
+		};
+
+		stereo0: stereo@7709000 {
+			stereo-index = <STEREO0_ID>;
+			compatible = "qca,ipq4019-stereo";
+			reg = <0x7709000 0x1000>;
+			status = "ok";
+		};
+
+		stereo3: stereo@770f000 {
+			stereo-index = <STEREO3_ID>;
+			compatible = "qca,ipq4019-stereo";
+			reg = <0x770F000 0x1000>;
+			status = "ok";
+		};
+
+		i2splatform: qca-pcm-i2s@7709000 {
+			compatible = "qca,ipq4019-pcm-i2s";
+			reg = <0x7709000 0x1000>;
+			status = "ok";
+		};
+
+		i2s: ipq4019-pcm-i2s@0 {
+			compatible = "qca,ipq4019-i2s";
+			dma-tx-channel = <MBOX0_TX_ID>;
+			stereo-tx-port = <STEREO0_ID>;
+			dma-rx-channel = <MBOX3_RX_ID>;
+			stereo-rx-port = <STEREO3_ID>;
+			clocks = <&adcc ADCC_TXB_CLK_SRC>,
+				<&adcc ADCC_TXM_CLK_SRC>,
+				<&adcc ADCC_RXB_CLK_SRC>,
+				<&adcc ADCC_RXM_CLK_SRC>;
+			clock-names = "audio_tx_bclk",
+				"audio_tx_mclk",
+				"audio_rx_bclk",
+				"audio_rx_mclk";
+			status = "ok";
+		};
+
+		sound: sound@0 {
+			compatible = "qca,ipq4019-audio";
+			status = "ok";
+			pinctrl-0 = <&audio_gpio_pins &audio1_gpio_pins>;
+			pinctrl-1 = <&audio_pins &audio1_pins>;
+			pinctrl-names = "default", "audio";
+
+		};
+
+		adcc: clock-controller@7700038 {
+			status = "ok";
+		};
+
+		qcom: ledc@1937000  {
+			status = "disabled";
+		};
+
+		nand: qpic-nand@79b0000 {
+			status = "disabled";
+		};
+
+		sdhc_1: sdhci@7824000{
+			qcom,clk-rates = <400000 25000000 50000000 100000000 \
+					 192000000>;
+		};
+
+		helios_misc: helios_misc {
+			compatible = "wistron,helios-misc";
+
+			usb-en-gpio = <&tlmm 36 0>;
+			usb-ocp-det-gpio = <&tlmm 4 0>;
+			usb-default-on = <0>;
+
+			lte-pwr-gpio = <&tlmm 20 0>;
+			lte-rst-gpio = <&tlmm 35 0>;
+			lte-default-on = <1>;
+
+			status = "ok";
+		};
+	};
+};

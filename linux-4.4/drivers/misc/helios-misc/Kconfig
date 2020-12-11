@@ -1,0 +1,8 @@
+#
+# Helios misc control
+#
+
+config HELIOS_MISC
+	bool "Helios Misc control driver"
+	help
+	  This enables the Helios Misc driver.
